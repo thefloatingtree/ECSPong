@@ -25,6 +25,6 @@ function run() {
     requestAnimationFrame(run);
 }
 
-document.fonts.ready.then(() => {
+document.fonts.load('24px montserrat').then(() => {
     run();
 })
