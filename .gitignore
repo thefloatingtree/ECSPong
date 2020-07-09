@@ -1,1 +1,7 @@
 node_modules
+lib
+src
+
+package.json
+package-lock.json
+webpack.config.js
