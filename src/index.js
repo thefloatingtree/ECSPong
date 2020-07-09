@@ -24,4 +24,7 @@ function run() {
     SceneManager.update(deltaTimer.step());
     requestAnimationFrame(run);
 }
-run();
+
+document.fonts.ready.then(() => {
+    run();
+})

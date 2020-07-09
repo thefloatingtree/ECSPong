@@ -122,7 +122,10 @@ function run() {
     _SceneManager__WEBPACK_IMPORTED_MODULE_2__["default"].update(deltaTimer.step());
     requestAnimationFrame(run);
 }
-run();
+
+document.fonts.ready.then(() => {
+    run();
+})
 
 /***/ }),
 /* 1 */
@@ -145,16 +148,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Particles_Particles__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(12);
 /* harmony import */ var _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(13);
 /* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(15);
-/* harmony import */ var _Systems_AIController__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(21);
-/* harmony import */ var _Systems_BallController__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(22);
-/* harmony import */ var _Systems_Common_Moving__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(23);
-/* harmony import */ var _Systems_Common_Physics__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(24);
-/* harmony import */ var _Systems_Common_RenderSystem__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(25);
-/* harmony import */ var _Systems_GameController__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(27);
-/* harmony import */ var _Systems_PaddleController__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(28);
-/* harmony import */ var _Systems_ParticleController__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(29);
-/* harmony import */ var _UI_UIElements__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(30);
-/* harmony import */ var _UI_UIManager__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(26);
+/* harmony import */ var _Systems_AIController__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(22);
+/* harmony import */ var _Systems_BallController__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(23);
+/* harmony import */ var _Systems_Common_Moving__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(24);
+/* harmony import */ var _Systems_Common_Physics__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(25);
+/* harmony import */ var _Systems_Common_RenderSystem__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(26);
+/* harmony import */ var _Systems_GameController__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(28);
+/* harmony import */ var _Systems_PaddleController__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(29);
+/* harmony import */ var _Systems_ParticleController__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(30);
+/* harmony import */ var _UI_UIElements__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(31);
+/* harmony import */ var _UI_UIManager__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(27);
 
 
 
@@ -1059,7 +1062,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(14);
 /* harmony import */ var _SoundManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(16);
 /* harmony import */ var _InputManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(19);
-/* harmony import */ var _EventManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(20);
+/* harmony import */ var _EventManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(21);
 
 
 
@@ -4393,7 +4396,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PRESSED", function() { return PRESSED; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DOWN", function() { return DOWN; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "InputManager", function() { return InputManager; });
-/* harmony import */ var _lib_pinput__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(31);
+/* harmony import */ var _lib_pinput__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(20);
 
 
 const RELEASED = "released";
@@ -4473,703 +4476,6 @@ class InputManager {
 
 /***/ }),
 /* 20 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventManager", function() { return EventManager; });
-class Event {
-    constructor() {
-        this.waitingToSee = 0;
-        this.haveSeen = 0;
-        this.payloads = [];
-    }
-}
-
-class EventManager {
-    constructor() {
-        this.events = new Map();
-    }
-
-    send(eventType, payload = {}) {
-        this._insureEventTypeExists(eventType);
-        let event = this.events.get(eventType);
-        if (event.waitingToSee === event.haveSeen) {
-            event.haveSeen = 0;
-            event.payloads = []
-        }
-        event.payloads.push(payload);
-    }
-
-    register(eventType) {
-        this._insureEventTypeExists(eventType);
-        this.events.get(eventType).waitingToSee++;
-    }
-
-    receive(eventType) {
-        let event = this.events.get(eventType);
-        if (event.payloads.length === 0) return [];
-        if (event.waitingToSee === event.haveSeen) return [];
-        event.haveSeen++;
-        return event.payloads;
-    }
-
-    _insureEventTypeExists(eventType) {
-        if (!this.events.get(eventType))
-            this.events.set(eventType, new Event());
-    }
-}
-
-/***/ }),
-/* 21 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AIController", function() { return AIController; });
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
-/* harmony import */ var _Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
-/* harmony import */ var _Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7);
-/* harmony import */ var _Components_Game__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9);
-/* harmony import */ var _Components_Paddle__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(10);
-/* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(15);
-
-
-
-
-
-
-
-
-class AIController extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
-    init() {
-        this.eventManager = _SceneManager__WEBPACK_IMPORTED_MODULE_6__["default"].getEventManager();
-    }
-
-    update() {
-        const game = this.queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_4__["Game"]);
-        if (!game.ai) return;
-        this.queries.paddles.entities.forEach(paddle => {
-            if (paddle.getComponent(_Components_Paddle__WEBPACK_IMPORTED_MODULE_5__["Paddle"]).player === 1) {
-                this.queries.ball.entities.forEach(entity => {
-                    const ballPosition = entity.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
-                    const ballVelocity = entity.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_3__["Velocity"]);
-                    const position = paddle.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
-                    const velocity = paddle.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_3__["Velocity"]);
-                    const renderShape = paddle.getComponent(_Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__["RenderShape"]);
-                    if (
-                        ballVelocity.x > 0 ||
-                        velocity.y > 20 ||
-                        velocity.y < -20 ||
-                        ballPosition.x < position.x + renderShape.width + 50
-                    ) {
-                        this.eventManager.send('AIControl', 'none');
-                        return;
-                    }
-                    if (ballPosition.y > position.y + renderShape.height / 2) {
-                        this.eventManager.send('AIControl', 'down');
-                    }
-                    if (ballPosition.y < position.y + renderShape.height / 2) {
-                        this.eventManager.send('AIControl', "up");
-                    }
-                })
-            }
-        });
-    }
-}
-
-/***/ }),
-/* 22 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BallController", function() { return BallController; });
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Components_Ball__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
-/* harmony import */ var _Components_Common_Position__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5);
-/* harmony import */ var _Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6);
-/* harmony import */ var _Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(7);
-/* harmony import */ var _Components_Game__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(9);
-/* harmony import */ var _Components_Paddle__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(10);
-/* harmony import */ var _Particles_Particles__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(12);
-/* harmony import */ var _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(13);
-/* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(15);
-/* harmony import */ var _Util__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(14);
-
-
-
-
-
-
-
-
-
-
-
-
-class BallController extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
-    init() {
-        this.eventManager = _SceneManager__WEBPACK_IMPORTED_MODULE_9__["default"].getEventManager();
-        this.eventManager.register('ColisionInProgress');
-    }
-
-    update() {
-        this.queries.ball.entities.forEach(entity => {
-            const velocity = entity.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_4__["Velocity"]);
-            const position = entity.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_2__["Position"]);
-            const renderShape = entity.getComponent(_Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_3__["RenderShape"]);
-            const canvas = _SceneManager__WEBPACK_IMPORTED_MODULE_9__["default"].getRenderContext().canvas;
-            const game = this.queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_5__["Game"]);
-            const particleManager = this.queries.singleton.getComponent(_Particles_Particles__WEBPACK_IMPORTED_MODULE_7__["ParticleManager"]);
-            const soundManager = _SceneManager__WEBPACK_IMPORTED_MODULE_9__["default"].getSoundManager();
-
-            if (position.y <= 0) {
-                if (velocity.y < 0) {
-                    velocity.y = -velocity.y;
-                    particleManager.addSystem(new _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_8__["PSExplosion"](position.x, position.y));
-                    soundManager.playSound('hit');
-                }
-            }
-            if (position.y >= canvas.height - renderShape.height) {
-                if (velocity.y > 0) {
-                    velocity.y = -velocity.y;
-                    particleManager.addSystem(new _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_8__["PSExplosion"](position.x, position.y));
-                    soundManager.playSound('hit');
-                }
-            }
-            if (position.x + renderShape.width <= 0) {
-                this.eventManager.send('PlayerTwoScored');
-                particleManager.addSystem(new _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_8__["PSBigExplosion"](position.x, position.y));
-                soundManager.playSound('score');
-            }
-            if (position.x >= canvas.width) {
-                this.eventManager.send('PlayerOneScored');
-                particleManager.addSystem(new _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_8__["PSBigExplosion"](position.x, position.y));
-                soundManager.playSound('score');
-            }
-
-            this.eventManager.receive('ColisionInProgress').forEach(payload => {
-                if (payload.bodyOne.hasComponent(_Components_Ball__WEBPACK_IMPORTED_MODULE_1__["Ball"]) && payload.bodyTwo.hasComponent(_Components_Paddle__WEBPACK_IMPORTED_MODULE_6__["Paddle"])) {
-                    game.volley++;
-                    if (payload.bodyTwo.getComponent(_Components_Paddle__WEBPACK_IMPORTED_MODULE_6__["Paddle"]).player === 1) {
-                        if (velocity.x < 0) {
-                            velocity.x = -velocity.x + 1;
-                            velocity.y += payload.bodyTwo.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_4__["Velocity"]).y / 5;
-                            particleManager.addSystem(new _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_8__["PSExplosion"](position.x, position.y));
-                            soundManager.playSound('hit2');
-                        }
-                    } else {
-                        if (velocity.x > 0) {
-                            velocity.x = -velocity.x - 1;
-                            velocity.y += payload.bodyTwo.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_4__["Velocity"]).y / 5;
-                            particleManager.addSystem(new _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_8__["PSExplosion"](position.x, position.y))
-                            soundManager.playSound('hit2');
-                        }
-                    }
-                }
-            })
-
-            velocity.x = Object(_Util__WEBPACK_IMPORTED_MODULE_10__["constrain"])(velocity.x, -16, 16);
-            velocity.y = Object(_Util__WEBPACK_IMPORTED_MODULE_10__["constrain"])(velocity.y, -16, 16)
-        })
-    }
-}
-
-/***/ }),
-/* 23 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Moving", function() { return Moving; });
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
-/* harmony import */ var _Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
-
-
-
-
-class Moving extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
-    update(delta) {
-        this.queries.moving.entities.forEach(entity => {
-            const position = entity.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
-            const velocity = entity.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_2__["Velocity"]);
-            position.x += velocity.x * delta;
-            position.y += velocity.y * delta;
-        })
-    }
-}
-
-/***/ }),
-/* 24 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Physics", function() { return Physics; });
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
-/* harmony import */ var _Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
-/* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
-/* harmony import */ var _Util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(14);
-
-
-
-
-
-
-class Physics extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
-    update() {
-        const eventManager = _SceneManager__WEBPACK_IMPORTED_MODULE_3__["default"].getEventManager();
-        this.queries.physicsBodies.entities.forEach(bodyOne => {
-            const bodyOnePosition = bodyOne.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
-            const bodyOneRenderShape = bodyOne.getComponent(_Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__["RenderShape"]);
-
-            this.queries.physicsBodies.entities.forEach(bodyTwo => {
-                if (bodyOne.id === bodyTwo.id) return;
-
-                const bodyTwoPosition = bodyTwo.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
-                const bodyTwoRenderShape = bodyTwo.getComponent(_Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__["RenderShape"]);
-
-                const colliding = Object(_Util__WEBPACK_IMPORTED_MODULE_4__["AABBCollision"])(
-                    bodyOnePosition.x,
-                    bodyOnePosition.y,
-                    bodyOneRenderShape.width,
-                    bodyOneRenderShape.height,
-                    bodyTwoPosition.x,
-                    bodyTwoPosition.y,
-                    bodyTwoRenderShape.width,
-                    bodyTwoRenderShape.height,
-                );
-
-                if (colliding) {
-                    eventManager.send("ColisionInProgress", { bodyOne, bodyTwo })
-                }
-            })
-        });
-    }
-}
-
-/***/ }),
-/* 25 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RenderSystem", function() { return RenderSystem; });
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
-/* harmony import */ var _Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
-/* harmony import */ var _Particles_Particles__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(12);
-/* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(15);
-/* harmony import */ var _UI_UIManager__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(26);
-
-
-
-
-
-
-
-class RenderSystem extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
-    init() {
-        this.uiManager = this.queries.singleton.getComponent(_UI_UIManager__WEBPACK_IMPORTED_MODULE_5__["UIManager"]);
-        this.uiManager.init();
-    }
-
-    update() {
-        const ctx = _SceneManager__WEBPACK_IMPORTED_MODULE_4__["default"].getRenderContext();
-        const particleManager = this.queries.singleton.getComponent(_Particles_Particles__WEBPACK_IMPORTED_MODULE_3__["ParticleManager"]);
-        // Clear screen
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = "#323232";
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-        // UI
-        this.uiManager.draw(ctx);
-
-        // Draw entities
-        if (this.queries.renderable) {
-            ctx.beginPath();
-            this.queries.renderable.entities.forEach(entity => {
-                const position = entity.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
-                const renderShape = entity.getComponent(_Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__["RenderShape"]);
-
-                ctx.fillStyle = renderShape.color;
-                ctx.moveTo(position.x, position.y);
-                if (renderShape.shape === "rectangle") {
-                    ctx.rect(position.x, position.y, renderShape.width, renderShape.height);
-                } else {
-                    ctx.arc(position.x, position.y, renderShape.radius, 0, Math.PI * 2, false)
-                }
-            });
-            ctx.fill();
-        }
-        if (particleManager) particleManager.draw(ctx);
-    }
-}
-
-/***/ }),
-/* 26 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UIManager", function() { return UIManager; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UIElement", function() { return UIElement; });
-class UIManager {
-    constructor() {
-        this.elements = [];
-        this.scene = {};
-    }
-
-    addElement(uiElement) {
-        uiElement.scene = this.scene;
-        this.elements.push(uiElement);
-    }
-
-    draw(renderContext){
-        this.elements.forEach(element => {
-            element.draw(renderContext);
-        })
-    }
-
-    init() {
-        this.elements.forEach(element => {
-            if (element.init) element.init();
-        })
-    }
-}
-
-class UIElement {
-    constructor() {}
-    init() {}
-    draw(renderContext) {}
-}
-
-/***/ }),
-/* 27 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GameController", function() { return GameController; });
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
-/* harmony import */ var _Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
-/* harmony import */ var _Components_Game__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9);
-/* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(15);
-/* harmony import */ var _Util__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(14);
-
-
-
-
-
-
-
-class GameController extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
-    init() {
-        this.eventManager = _SceneManager__WEBPACK_IMPORTED_MODULE_4__["default"].getEventManager();
-        this.eventManager.register('PlayerOneScored');
-        this.eventManager.register('PlayerTwoScored');
-        this.eventManager.register('ResetGame');
-        this.resetBall();
-    }
-
-    update() {
-        const game = this.queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_3__["Game"]);
-        const input = _SceneManager__WEBPACK_IMPORTED_MODULE_4__["default"].getInputManager();
-
-        if (input.getInput('AI')) {
-            game.ai = !game.ai;
-        }
-
-        if (input.getInput('Reset')) {
-            this.reset();
-        }
-
-        if (input.getInput('Pause', true)) {
-            _SceneManager__WEBPACK_IMPORTED_MODULE_4__["default"].playScene('pauseScene');
-        }
-
-        if (game.ai) {
-            input.disableBinding('PlayerOneUp')
-            input.disableBinding('PlayerOneDown')
-        } else {
-            input.enableBinding('PlayerOneUp')
-            input.enableBinding('PlayerOneDown')
-        }
-
-        this.eventManager.receive('PlayerOneScored').forEach(() => {
-            game.playerOneScore++;
-            game.volley = 0;
-            this.resetBall();
-        });
-        this.eventManager.receive('PlayerTwoScored').forEach(() => {
-            game.playerTwoScore++;
-            game.volley = 0;
-            this.resetBall();
-        });
-
-        this.eventManager.receive('ResetGame').forEach(() => {
-            this.reset();
-        })
-
-        if (game.playerOneScore === game.winningScore || game.playerTwoScore === game.winningScore) {
-            _SceneManager__WEBPACK_IMPORTED_MODULE_4__["default"].playScene('winScene');
-        }
-    }
-
-    reset() {
-        const game = this.queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_3__["Game"]);
-        game.playerOneScore = 0;
-        game.playerTwoScore = 0;
-        game.volley = 0;
-        this.resetBall();
-    }
-
-    resetBall() {
-        const canvas = _SceneManager__WEBPACK_IMPORTED_MODULE_4__["default"].getRenderContext().canvas;
-        const game = this.queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_3__["Game"]);
-        this.queries.ball.entities.forEach(entity => {
-            let position = entity.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
-            let velocity = entity.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_2__["Velocity"]);
-            position.x = canvas.width / 2;
-            position.y = canvas.height / 2;
-            velocity.x = ((game.playerOneScore + game.playerTwoScore) % 2 ? 1 : -1) * 6;
-            velocity.y = Object(_Util__WEBPACK_IMPORTED_MODULE_5__["random"])(-2, 2);
-        })
-    }
-}
-
-/***/ }),
-/* 28 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PaddleController", function() { return PaddleController; });
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
-/* harmony import */ var _Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
-/* harmony import */ var _Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7);
-/* harmony import */ var _Components_Constants__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8);
-/* harmony import */ var _Components_Paddle__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(10);
-/* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(15);
-/* harmony import */ var _Util__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(14);
-
-
-
-
-
-
-
-
-
-class PaddleController extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
-    init() {
-        this.eventManager = _SceneManager__WEBPACK_IMPORTED_MODULE_6__["default"].getEventManager();
-        this.eventManager.register('AIControl');
-    }
-
-    update() {
-        this.queries.paddles.entities.forEach(entity => {
-            const paddle = entity.getComponent(_Components_Paddle__WEBPACK_IMPORTED_MODULE_5__["Paddle"]);
-            const position = entity.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
-            const velocity = entity.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_3__["Velocity"]);
-            const renderShape = entity.getComponent(_Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__["RenderShape"]);
-            const input = _SceneManager__WEBPACK_IMPORTED_MODULE_6__["default"].getInputManager();
-            const canvasHeight = _SceneManager__WEBPACK_IMPORTED_MODULE_6__["default"].getRenderContext().canvas.height;
-            const constants = this.queries.singleton.getComponent(_Components_Constants__WEBPACK_IMPORTED_MODULE_4__["Constants"]);
-            
-            if (paddle.player === 1) {
-                const aiDirection = this.eventManager.receive('AIControl')[0];
-                this.movePaddles(input.getInput('PlayerOneUp') || aiDirection === 'up', input.getInput('PlayerOneDown') || aiDirection === 'down', paddle, velocity);
-            } else {
-                this.movePaddles(input.getInput('PlayerTwoUp'), input.getInput('PlayerTwoDown'), paddle, velocity);
-            }
-
-            paddle.y = Object(_Util__WEBPACK_IMPORTED_MODULE_7__["constrain"])(velocity.y, -paddle.speed, paddle.speed);
-
-            if (position.y <= 0) {
-                velocity.y = paddle.bounce;
-            }
-            if (position.y >= canvasHeight - constants.paddleHeight) {
-                velocity.y = -paddle.bounce;
-            }
-
-            // Stretch paddle based on velocity
-            renderShape.height = (constants.paddleHeight * Math.abs(velocity.y) / 280) + constants.paddleHeight;
-        });
-    }
-
-    movePaddles(up, down, paddle, velocity) {
-        if (up) {
-            velocity.y -= paddle.acceleration; 
-            return; 
-        } else if (down) {
-            velocity.y += paddle.acceleration; 
-            return;
-        } else {
-            velocity.y *= paddle.friction;
-        }
-    }
-}
-
-/***/ }),
-/* 29 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ParticleController", function() { return ParticleController; });
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Components_ParticleSystemContainer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
-/* harmony import */ var _Particles_Particles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(12);
-
-
-
-
-class ParticleController extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
-    init() {
-        this.particleManager = this.queries.singleton.getComponent(_Particles_Particles__WEBPACK_IMPORTED_MODULE_2__["ParticleManager"]);
-        this.queries.particleSystems.entities.forEach(entity => {
-            this.particleManager.addSystem(new (entity.getComponent(_Components_ParticleSystemContainer__WEBPACK_IMPORTED_MODULE_1__["ParticleSystemContainer"]).particleSystem)(entity));
-        });
-    }
-
-    update() {
-        this.particleManager.update();
-    }
-}
-
-/***/ }),
-/* 30 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TitleUIElement", function() { return TitleUIElement; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ScoreUIElement", function() { return ScoreUIElement; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ControlsUIElement", function() { return ControlsUIElement; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WinTextUIElement", function() { return WinTextUIElement; });
-/* harmony import */ var _UIManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(26);
-/* harmony import */ var _Components_Game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9);
-/* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(15);
-
-
-
-
-class TitleUIElement extends _UIManager__WEBPACK_IMPORTED_MODULE_0__["UIElement"] {
-    constructor(text, x, y, { font = '24px Helvetica', fillStyle = '#FFFFFF', textAlign = 'left', textBaseline = 'bottom' } = {}) {
-        super();
-        this.text = text;
-        this.x = x;
-        this.y = y;
-        this.font = font;
-        this.fillStyle = fillStyle;
-        this.textAlign = textAlign;
-        this.textBaseline = textBaseline;    
-    }
-
-    draw(ctx) {
-        ctx.fillStyle = this.fillStyle;
-        ctx.textAlign = this.textAlign;
-        ctx.textBaseline = this.textBaseline;
-        ctx.font = this.font;
-        ctx.fillText(this.text, this.x, this.y);
-    }
-}
-
-class ScoreUIElement extends _UIManager__WEBPACK_IMPORTED_MODULE_0__["UIElement"] {
-    init() {
-        this.game = this.scene.queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_1__["Game"]);
-    }
-
-    // This is a MESS but it works so here it will stay
-    draw(ctx) {
-        const number = this.game.winningScore * 2 - 1;
-        const width = 305;
-        let radius = 7;
-        for (let i = -Math.floor(number / 2); i <= Math.floor(number / 2); i++) {
-            let x = ctx.canvas.width / 2 + i * (width / number);
-            let y = ctx.canvas.height / 2 - 50;
-            ctx.beginPath();
-            if (i === 0) {
-                ctx.strokeStyle = '#ffffff';
-                ctx.fillStyle = '#ffffff';
-                ctx.lineWidth = 6;
-                ctx.arc(x, y, radius + 3, 0, Math.PI * 2);
-                if (this.game.playerOneScore >= this.game.winningScore || this.game.playerTwoScore >= this.game.winningScore) {
-                    ctx.fill();
-                }
-            } else {
-                ctx.strokeStyle = '#1d1d1f';
-                ctx.lineWidth = 5;
-                ctx.arc(x, y, radius, 0, Math.PI * 2);
-                if (
-                    (this.game.playerOneScore - this.game.winningScore >= i && i < 0) ||
-                    (-this.game.playerTwoScore + this.game.winningScore <= i && i > 0)
-                ) {
-                    ctx.strokeStyle = '#ffffff'
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fill()
-                }
-            }
-            ctx.stroke();
-        }
-    }
-}
-
-class ControlsUIElement extends _UIManager__WEBPACK_IMPORTED_MODULE_0__["UIElement"] {
-    init() {
-        this.game = this.scene.queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_1__["Game"]);
-    }
-
-    draw(ctx) {
-        const margin = 15;
-
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'bottom';
-        ctx.font = 'bold 24px montserrat';
-        ctx.fillStyle = this.game.ai ? '#FFFFFF' : '#1d1d1f';
-        ctx.fillText('AI (K)', 25, ctx.canvas.height - margin);
-        ctx.fillStyle = this.game.paused ? '#FFFFFF' : '#1d1d1f';
-        ctx.fillText('Pause (P)', 25 + margin + ctx.measureText('AI (K)').width, ctx.canvas.height - margin);
-        ctx.fillStyle = '#1d1d1f';
-        ctx.fillText('Reset (R)', 25 + margin * 2 + ctx.measureText('AI (K)').width + ctx.measureText('Pause (P)').width, ctx.canvas.height - margin);
-    }
-}
-
-class WinTextUIElement extends _UIManager__WEBPACK_IMPORTED_MODULE_0__["UIElement"] {
-    constructor() {
-        super();
-        const canvas = _SceneManager__WEBPACK_IMPORTED_MODULE_2__["default"].getRenderContext().canvas;
-        this.title = new TitleUIElement('', canvas.width / 2, canvas.height / 2, { 
-            font: '120px montserrat', 
-            textAlign: 'center', 
-            textBaseline: 'middle' 
-        });
-    }
-
-    draw(ctx) {
-        const game = _SceneManager__WEBPACK_IMPORTED_MODULE_2__["default"].getScene('gameScene').queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_1__["Game"]);
-        this.title.text = game.playerOneScore === game.winningScore ? 'left player wins' : 'right player wins';
-        this.title.draw(ctx);
-    }
-}
-
-/***/ }),
-/* 31 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -5478,6 +4784,703 @@ const Pinput = (function() {
 })();
 
 /***/ }),
+/* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventManager", function() { return EventManager; });
+class Event {
+    constructor() {
+        this.waitingToSee = 0;
+        this.haveSeen = 0;
+        this.payloads = [];
+    }
+}
+
+class EventManager {
+    constructor() {
+        this.events = new Map();
+    }
+
+    send(eventType, payload = {}) {
+        this._insureEventTypeExists(eventType);
+        let event = this.events.get(eventType);
+        if (event.waitingToSee === event.haveSeen) {
+            event.haveSeen = 0;
+            event.payloads = []
+        }
+        event.payloads.push(payload);
+    }
+
+    register(eventType) {
+        this._insureEventTypeExists(eventType);
+        this.events.get(eventType).waitingToSee++;
+    }
+
+    receive(eventType) {
+        let event = this.events.get(eventType);
+        if (event.payloads.length === 0) return [];
+        if (event.waitingToSee === event.haveSeen) return [];
+        event.haveSeen++;
+        return event.payloads;
+    }
+
+    _insureEventTypeExists(eventType) {
+        if (!this.events.get(eventType))
+            this.events.set(eventType, new Event());
+    }
+}
+
+/***/ }),
+/* 22 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AIController", function() { return AIController; });
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
+/* harmony import */ var _Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
+/* harmony import */ var _Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7);
+/* harmony import */ var _Components_Game__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9);
+/* harmony import */ var _Components_Paddle__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(10);
+/* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(15);
+
+
+
+
+
+
+
+
+class AIController extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
+    init() {
+        this.eventManager = _SceneManager__WEBPACK_IMPORTED_MODULE_6__["default"].getEventManager();
+    }
+
+    update() {
+        const game = this.queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_4__["Game"]);
+        if (!game.ai) return;
+        this.queries.paddles.entities.forEach(paddle => {
+            if (paddle.getComponent(_Components_Paddle__WEBPACK_IMPORTED_MODULE_5__["Paddle"]).player === 1) {
+                this.queries.ball.entities.forEach(entity => {
+                    const ballPosition = entity.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
+                    const ballVelocity = entity.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_3__["Velocity"]);
+                    const position = paddle.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
+                    const velocity = paddle.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_3__["Velocity"]);
+                    const renderShape = paddle.getComponent(_Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__["RenderShape"]);
+                    if (
+                        ballVelocity.x > 0 ||
+                        velocity.y > 20 ||
+                        velocity.y < -20 ||
+                        ballPosition.x < position.x + renderShape.width + 50
+                    ) {
+                        this.eventManager.send('AIControl', 'none');
+                        return;
+                    }
+                    if (ballPosition.y > position.y + renderShape.height / 2) {
+                        this.eventManager.send('AIControl', 'down');
+                    }
+                    if (ballPosition.y < position.y + renderShape.height / 2) {
+                        this.eventManager.send('AIControl', "up");
+                    }
+                })
+            }
+        });
+    }
+}
+
+/***/ }),
+/* 23 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BallController", function() { return BallController; });
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Components_Ball__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _Components_Common_Position__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5);
+/* harmony import */ var _Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6);
+/* harmony import */ var _Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(7);
+/* harmony import */ var _Components_Game__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(9);
+/* harmony import */ var _Components_Paddle__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(10);
+/* harmony import */ var _Particles_Particles__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(12);
+/* harmony import */ var _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(13);
+/* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(15);
+/* harmony import */ var _Util__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(14);
+
+
+
+
+
+
+
+
+
+
+
+
+class BallController extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
+    init() {
+        this.eventManager = _SceneManager__WEBPACK_IMPORTED_MODULE_9__["default"].getEventManager();
+        this.eventManager.register('ColisionInProgress');
+    }
+
+    update() {
+        this.queries.ball.entities.forEach(entity => {
+            const velocity = entity.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_4__["Velocity"]);
+            const position = entity.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_2__["Position"]);
+            const renderShape = entity.getComponent(_Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_3__["RenderShape"]);
+            const canvas = _SceneManager__WEBPACK_IMPORTED_MODULE_9__["default"].getRenderContext().canvas;
+            const game = this.queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_5__["Game"]);
+            const particleManager = this.queries.singleton.getComponent(_Particles_Particles__WEBPACK_IMPORTED_MODULE_7__["ParticleManager"]);
+            const soundManager = _SceneManager__WEBPACK_IMPORTED_MODULE_9__["default"].getSoundManager();
+
+            if (position.y <= 0) {
+                if (velocity.y < 0) {
+                    velocity.y = -velocity.y;
+                    particleManager.addSystem(new _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_8__["PSExplosion"](position.x, position.y));
+                    soundManager.playSound('hit');
+                }
+            }
+            if (position.y >= canvas.height - renderShape.height) {
+                if (velocity.y > 0) {
+                    velocity.y = -velocity.y;
+                    particleManager.addSystem(new _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_8__["PSExplosion"](position.x, position.y));
+                    soundManager.playSound('hit');
+                }
+            }
+            if (position.x + renderShape.width <= 0) {
+                this.eventManager.send('PlayerTwoScored');
+                particleManager.addSystem(new _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_8__["PSBigExplosion"](position.x, position.y));
+                soundManager.playSound('score');
+            }
+            if (position.x >= canvas.width) {
+                this.eventManager.send('PlayerOneScored');
+                particleManager.addSystem(new _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_8__["PSBigExplosion"](position.x, position.y));
+                soundManager.playSound('score');
+            }
+
+            this.eventManager.receive('ColisionInProgress').forEach(payload => {
+                if (payload.bodyOne.hasComponent(_Components_Ball__WEBPACK_IMPORTED_MODULE_1__["Ball"]) && payload.bodyTwo.hasComponent(_Components_Paddle__WEBPACK_IMPORTED_MODULE_6__["Paddle"])) {
+                    game.volley++;
+                    if (payload.bodyTwo.getComponent(_Components_Paddle__WEBPACK_IMPORTED_MODULE_6__["Paddle"]).player === 1) {
+                        if (velocity.x < 0) {
+                            velocity.x = -velocity.x + 1;
+                            velocity.y += payload.bodyTwo.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_4__["Velocity"]).y / 5;
+                            particleManager.addSystem(new _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_8__["PSExplosion"](position.x, position.y));
+                            soundManager.playSound('hit2');
+                        }
+                    } else {
+                        if (velocity.x > 0) {
+                            velocity.x = -velocity.x - 1;
+                            velocity.y += payload.bodyTwo.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_4__["Velocity"]).y / 5;
+                            particleManager.addSystem(new _Particles_ParticleSystems__WEBPACK_IMPORTED_MODULE_8__["PSExplosion"](position.x, position.y))
+                            soundManager.playSound('hit2');
+                        }
+                    }
+                }
+            })
+
+            velocity.x = Object(_Util__WEBPACK_IMPORTED_MODULE_10__["constrain"])(velocity.x, -16, 16);
+            velocity.y = Object(_Util__WEBPACK_IMPORTED_MODULE_10__["constrain"])(velocity.y, -16, 16)
+        })
+    }
+}
+
+/***/ }),
+/* 24 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Moving", function() { return Moving; });
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
+/* harmony import */ var _Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
+
+
+
+
+class Moving extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
+    update(delta) {
+        this.queries.moving.entities.forEach(entity => {
+            const position = entity.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
+            const velocity = entity.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_2__["Velocity"]);
+            position.x += velocity.x * delta;
+            position.y += velocity.y * delta;
+        })
+    }
+}
+
+/***/ }),
+/* 25 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Physics", function() { return Physics; });
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
+/* harmony import */ var _Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
+/* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
+/* harmony import */ var _Util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(14);
+
+
+
+
+
+
+class Physics extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
+    update() {
+        const eventManager = _SceneManager__WEBPACK_IMPORTED_MODULE_3__["default"].getEventManager();
+        this.queries.physicsBodies.entities.forEach(bodyOne => {
+            const bodyOnePosition = bodyOne.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
+            const bodyOneRenderShape = bodyOne.getComponent(_Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__["RenderShape"]);
+
+            this.queries.physicsBodies.entities.forEach(bodyTwo => {
+                if (bodyOne.id === bodyTwo.id) return;
+
+                const bodyTwoPosition = bodyTwo.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
+                const bodyTwoRenderShape = bodyTwo.getComponent(_Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__["RenderShape"]);
+
+                const colliding = Object(_Util__WEBPACK_IMPORTED_MODULE_4__["AABBCollision"])(
+                    bodyOnePosition.x,
+                    bodyOnePosition.y,
+                    bodyOneRenderShape.width,
+                    bodyOneRenderShape.height,
+                    bodyTwoPosition.x,
+                    bodyTwoPosition.y,
+                    bodyTwoRenderShape.width,
+                    bodyTwoRenderShape.height,
+                );
+
+                if (colliding) {
+                    eventManager.send("ColisionInProgress", { bodyOne, bodyTwo })
+                }
+            })
+        });
+    }
+}
+
+/***/ }),
+/* 26 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RenderSystem", function() { return RenderSystem; });
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
+/* harmony import */ var _Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
+/* harmony import */ var _Particles_Particles__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(12);
+/* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(15);
+/* harmony import */ var _UI_UIManager__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(27);
+
+
+
+
+
+
+
+class RenderSystem extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
+    init() {
+        this.uiManager = this.queries.singleton.getComponent(_UI_UIManager__WEBPACK_IMPORTED_MODULE_5__["UIManager"]);
+        this.uiManager.init();
+    }
+
+    update() {
+        const ctx = _SceneManager__WEBPACK_IMPORTED_MODULE_4__["default"].getRenderContext();
+        const particleManager = this.queries.singleton.getComponent(_Particles_Particles__WEBPACK_IMPORTED_MODULE_3__["ParticleManager"]);
+        // Clear screen
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = "#323232";
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        // UI
+        this.uiManager.draw(ctx);
+
+        // Draw entities
+        if (this.queries.renderable) {
+            ctx.beginPath();
+            this.queries.renderable.entities.forEach(entity => {
+                const position = entity.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
+                const renderShape = entity.getComponent(_Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__["RenderShape"]);
+
+                ctx.fillStyle = renderShape.color;
+                ctx.moveTo(position.x, position.y);
+                if (renderShape.shape === "rectangle") {
+                    ctx.rect(position.x, position.y, renderShape.width, renderShape.height);
+                } else {
+                    ctx.arc(position.x, position.y, renderShape.radius, 0, Math.PI * 2, false)
+                }
+            });
+            ctx.fill();
+        }
+        if (particleManager) particleManager.draw(ctx);
+    }
+}
+
+/***/ }),
+/* 27 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UIManager", function() { return UIManager; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UIElement", function() { return UIElement; });
+class UIManager {
+    constructor() {
+        this.elements = [];
+        this.scene = {};
+    }
+
+    addElement(uiElement) {
+        uiElement.scene = this.scene;
+        this.elements.push(uiElement);
+    }
+
+    draw(renderContext){
+        this.elements.forEach(element => {
+            element.draw(renderContext);
+        })
+    }
+
+    init() {
+        this.elements.forEach(element => {
+            if (element.init) element.init();
+        })
+    }
+}
+
+class UIElement {
+    constructor() {}
+    init() {}
+    draw(renderContext) {}
+}
+
+/***/ }),
+/* 28 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GameController", function() { return GameController; });
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
+/* harmony import */ var _Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
+/* harmony import */ var _Components_Game__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9);
+/* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(15);
+/* harmony import */ var _Util__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(14);
+
+
+
+
+
+
+
+class GameController extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
+    init() {
+        this.eventManager = _SceneManager__WEBPACK_IMPORTED_MODULE_4__["default"].getEventManager();
+        this.eventManager.register('PlayerOneScored');
+        this.eventManager.register('PlayerTwoScored');
+        this.eventManager.register('ResetGame');
+        this.resetBall();
+    }
+
+    update() {
+        const game = this.queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_3__["Game"]);
+        const input = _SceneManager__WEBPACK_IMPORTED_MODULE_4__["default"].getInputManager();
+
+        if (input.getInput('AI')) {
+            game.ai = !game.ai;
+        }
+
+        if (input.getInput('Reset')) {
+            this.reset();
+        }
+
+        if (input.getInput('Pause', true)) {
+            _SceneManager__WEBPACK_IMPORTED_MODULE_4__["default"].playScene('pauseScene');
+        }
+
+        if (game.ai) {
+            input.disableBinding('PlayerOneUp')
+            input.disableBinding('PlayerOneDown')
+        } else {
+            input.enableBinding('PlayerOneUp')
+            input.enableBinding('PlayerOneDown')
+        }
+
+        this.eventManager.receive('PlayerOneScored').forEach(() => {
+            game.playerOneScore++;
+            game.volley = 0;
+            this.resetBall();
+        });
+        this.eventManager.receive('PlayerTwoScored').forEach(() => {
+            game.playerTwoScore++;
+            game.volley = 0;
+            this.resetBall();
+        });
+
+        this.eventManager.receive('ResetGame').forEach(() => {
+            this.reset();
+        })
+
+        if (game.playerOneScore === game.winningScore || game.playerTwoScore === game.winningScore) {
+            _SceneManager__WEBPACK_IMPORTED_MODULE_4__["default"].playScene('winScene');
+        }
+    }
+
+    reset() {
+        const game = this.queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_3__["Game"]);
+        game.playerOneScore = 0;
+        game.playerTwoScore = 0;
+        game.volley = 0;
+        this.resetBall();
+    }
+
+    resetBall() {
+        const canvas = _SceneManager__WEBPACK_IMPORTED_MODULE_4__["default"].getRenderContext().canvas;
+        const game = this.queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_3__["Game"]);
+        this.queries.ball.entities.forEach(entity => {
+            let position = entity.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
+            let velocity = entity.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_2__["Velocity"]);
+            position.x = canvas.width / 2;
+            position.y = canvas.height / 2;
+            velocity.x = ((game.playerOneScore + game.playerTwoScore) % 2 ? 1 : -1) * 6;
+            velocity.y = Object(_Util__WEBPACK_IMPORTED_MODULE_5__["random"])(-2, 2);
+        })
+    }
+}
+
+/***/ }),
+/* 29 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PaddleController", function() { return PaddleController; });
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
+/* harmony import */ var _Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
+/* harmony import */ var _Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7);
+/* harmony import */ var _Components_Constants__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8);
+/* harmony import */ var _Components_Paddle__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(10);
+/* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(15);
+/* harmony import */ var _Util__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(14);
+
+
+
+
+
+
+
+
+
+class PaddleController extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
+    init() {
+        this.eventManager = _SceneManager__WEBPACK_IMPORTED_MODULE_6__["default"].getEventManager();
+        this.eventManager.register('AIControl');
+    }
+
+    update() {
+        this.queries.paddles.entities.forEach(entity => {
+            const paddle = entity.getComponent(_Components_Paddle__WEBPACK_IMPORTED_MODULE_5__["Paddle"]);
+            const position = entity.getComponent(_Components_Common_Position__WEBPACK_IMPORTED_MODULE_1__["Position"]);
+            const velocity = entity.getComponent(_Components_Common_Velocity__WEBPACK_IMPORTED_MODULE_3__["Velocity"]);
+            const renderShape = entity.getComponent(_Components_Common_RenderShape__WEBPACK_IMPORTED_MODULE_2__["RenderShape"]);
+            const input = _SceneManager__WEBPACK_IMPORTED_MODULE_6__["default"].getInputManager();
+            const canvasHeight = _SceneManager__WEBPACK_IMPORTED_MODULE_6__["default"].getRenderContext().canvas.height;
+            const constants = this.queries.singleton.getComponent(_Components_Constants__WEBPACK_IMPORTED_MODULE_4__["Constants"]);
+            
+            if (paddle.player === 1) {
+                const aiDirection = this.eventManager.receive('AIControl')[0];
+                this.movePaddles(input.getInput('PlayerOneUp') || aiDirection === 'up', input.getInput('PlayerOneDown') || aiDirection === 'down', paddle, velocity);
+            } else {
+                this.movePaddles(input.getInput('PlayerTwoUp'), input.getInput('PlayerTwoDown'), paddle, velocity);
+            }
+
+            paddle.y = Object(_Util__WEBPACK_IMPORTED_MODULE_7__["constrain"])(velocity.y, -paddle.speed, paddle.speed);
+
+            if (position.y <= 0) {
+                velocity.y = paddle.bounce;
+            }
+            if (position.y >= canvasHeight - constants.paddleHeight) {
+                velocity.y = -paddle.bounce;
+            }
+
+            // Stretch paddle based on velocity
+            renderShape.height = (constants.paddleHeight * Math.abs(velocity.y) / 280) + constants.paddleHeight;
+        });
+    }
+
+    movePaddles(up, down, paddle, velocity) {
+        if (up) {
+            velocity.y -= paddle.acceleration; 
+            return; 
+        } else if (down) {
+            velocity.y += paddle.acceleration; 
+            return;
+        } else {
+            velocity.y *= paddle.friction;
+        }
+    }
+}
+
+/***/ }),
+/* 30 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ParticleController", function() { return ParticleController; });
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Components_ParticleSystemContainer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
+/* harmony import */ var _Particles_Particles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(12);
+
+
+
+
+class ParticleController extends treecs__WEBPACK_IMPORTED_MODULE_0__["System"] {
+    init() {
+        this.particleManager = this.queries.singleton.getComponent(_Particles_Particles__WEBPACK_IMPORTED_MODULE_2__["ParticleManager"]);
+        this.queries.particleSystems.entities.forEach(entity => {
+            this.particleManager.addSystem(new (entity.getComponent(_Components_ParticleSystemContainer__WEBPACK_IMPORTED_MODULE_1__["ParticleSystemContainer"]).particleSystem)(entity));
+        });
+    }
+
+    update() {
+        this.particleManager.update();
+    }
+}
+
+/***/ }),
+/* 31 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TitleUIElement", function() { return TitleUIElement; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ScoreUIElement", function() { return ScoreUIElement; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ControlsUIElement", function() { return ControlsUIElement; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WinTextUIElement", function() { return WinTextUIElement; });
+/* harmony import */ var _UIManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(27);
+/* harmony import */ var _Components_Game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9);
+/* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(15);
+
+
+
+
+class TitleUIElement extends _UIManager__WEBPACK_IMPORTED_MODULE_0__["UIElement"] {
+    constructor(text, x, y, { font = '24px Helvetica', fillStyle = '#FFFFFF', textAlign = 'left', textBaseline = 'bottom' } = {}) {
+        super();
+        this.text = text;
+        this.x = x;
+        this.y = y;
+        this.font = font;
+        this.fillStyle = fillStyle;
+        this.textAlign = textAlign;
+        this.textBaseline = textBaseline;    
+    }
+
+    draw(ctx) {
+        ctx.fillStyle = this.fillStyle;
+        ctx.textAlign = this.textAlign;
+        ctx.textBaseline = this.textBaseline;
+        ctx.font = this.font;
+        ctx.fillText(this.text, this.x, this.y);
+    }
+}
+
+class ScoreUIElement extends _UIManager__WEBPACK_IMPORTED_MODULE_0__["UIElement"] {
+    init() {
+        this.game = this.scene.queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_1__["Game"]);
+    }
+
+    // This is a MESS but it works so here it will stay
+    draw(ctx) {
+        const number = this.game.winningScore * 2 - 1;
+        const width = 305;
+        let radius = 7;
+        for (let i = -Math.floor(number / 2); i <= Math.floor(number / 2); i++) {
+            let x = ctx.canvas.width / 2 + i * (width / number);
+            let y = ctx.canvas.height / 2 - 50;
+            ctx.beginPath();
+            if (i === 0) {
+                ctx.strokeStyle = '#ffffff';
+                ctx.fillStyle = '#ffffff';
+                ctx.lineWidth = 6;
+                ctx.arc(x, y, radius + 3, 0, Math.PI * 2);
+                if (this.game.playerOneScore >= this.game.winningScore || this.game.playerTwoScore >= this.game.winningScore) {
+                    ctx.fill();
+                }
+            } else {
+                ctx.strokeStyle = '#1d1d1f';
+                ctx.lineWidth = 5;
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                if (
+                    (this.game.playerOneScore - this.game.winningScore >= i && i < 0) ||
+                    (-this.game.playerTwoScore + this.game.winningScore <= i && i > 0)
+                ) {
+                    ctx.strokeStyle = '#ffffff'
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fill()
+                }
+            }
+            ctx.stroke();
+        }
+    }
+}
+
+class ControlsUIElement extends _UIManager__WEBPACK_IMPORTED_MODULE_0__["UIElement"] {
+    init() {
+        this.game = this.scene.queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_1__["Game"]);
+    }
+
+    draw(ctx) {
+        const margin = 15;
+
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'bottom';
+        ctx.font = 'bold 24px montserrat';
+        ctx.fillStyle = this.game.ai ? '#FFFFFF' : '#1d1d1f';
+        ctx.fillText('AI (K)', 25, ctx.canvas.height - margin);
+        ctx.fillStyle = this.game.paused ? '#FFFFFF' : '#1d1d1f';
+        ctx.fillText('Pause (P)', 25 + margin + ctx.measureText('AI (K)').width, ctx.canvas.height - margin);
+        ctx.fillStyle = '#1d1d1f';
+        ctx.fillText('Reset (R)', 25 + margin * 2 + ctx.measureText('AI (K)').width + ctx.measureText('Pause (P)').width, ctx.canvas.height - margin);
+    }
+}
+
+class WinTextUIElement extends _UIManager__WEBPACK_IMPORTED_MODULE_0__["UIElement"] {
+    constructor() {
+        super();
+        const canvas = _SceneManager__WEBPACK_IMPORTED_MODULE_2__["default"].getRenderContext().canvas;
+        this.title = new TitleUIElement('', canvas.width / 2, canvas.height / 2, { 
+            font: '120px montserrat', 
+            textAlign: 'center', 
+            textBaseline: 'middle' 
+        });
+    }
+
+    draw(ctx) {
+        const game = _SceneManager__WEBPACK_IMPORTED_MODULE_2__["default"].getScene('gameScene').queries.singleton.getComponent(_Components_Game__WEBPACK_IMPORTED_MODULE_1__["Game"]);
+        this.title.text = game.playerOneScore === game.winningScore ? 'left player wins' : 'right player wins';
+        this.title.draw(ctx);
+    }
+}
+
+/***/ }),
 /* 32 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -5486,9 +5489,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "buildPauseScene", function() { return buildPauseScene; });
 /* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Systems_Common_RenderSystem__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(25);
-/* harmony import */ var _UI_UIManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(26);
-/* harmony import */ var _UI_UIElements__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(30);
+/* harmony import */ var _Systems_Common_RenderSystem__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(26);
+/* harmony import */ var _UI_UIManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(27);
+/* harmony import */ var _UI_UIElements__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(31);
 /* harmony import */ var _Components_Game__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9);
 /* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(15);
 /* harmony import */ var _Systems_PausedSceneController__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(33);
@@ -5558,9 +5561,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "buildWinScene", function() { return buildWinScene; });
 /* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* harmony import */ var treecs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(treecs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Systems_Common_RenderSystem__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(25);
-/* harmony import */ var _UI_UIManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(26);
-/* harmony import */ var _UI_UIElements__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(30);
+/* harmony import */ var _Systems_Common_RenderSystem__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(26);
+/* harmony import */ var _UI_UIManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(27);
+/* harmony import */ var _UI_UIElements__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(31);
 /* harmony import */ var _Components_Game__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9);
 /* harmony import */ var _SceneManager__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(15);
 /* harmony import */ var _Systems_PausedSceneController__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(33);
